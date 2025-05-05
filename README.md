@@ -54,8 +54,8 @@ Files:
     Lists the libraries required to run the neural network and get a desired output.
     
 - Database information (Local MySQL Database):
-    - Username: `daniel`
-    - Password: `daniel`
+    - Username: `root`
+    - Password: `password`
     - Database name: `nn_project_2_database`
 
 ---
