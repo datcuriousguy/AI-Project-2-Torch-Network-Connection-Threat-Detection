@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import mysql.connector
+from mysql.connector import Error
 
 """
 These are the lists of possible values for the protocols, services, and flags of connections.
@@ -114,3 +116,85 @@ a suitable datatype.
 print("\nSample Network Connection Training Data:\n")
 print(data.head(len(data)).to_string(index=False))
 print(f'\n\ntotal training data size: {len(data)}')   # <-- just for reference
+
+
+"""
+/ / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+"""
+
+"""
+Code to upload it to a mysql db if its not already there:
+"""
+import pymysql
+conn = pymysql.connect(
+    host="localhost",
+    user="root",
+    password="password",
+    database="nn_project_2_database"
+)
+
+
+"""
+In this try-except block, we create the table named connection_data with the columns
+
+col name             data type
+
+id                   INT AUTO_INCREMENT PRIMARY KEY,
+Protocol_type        VARCHAR(10),
+Service              VARCHAR(10),
+Flag                 VARCHAR(10),
+Src_bytes            INT,
+Dst_bytes            INT,
+Count                INT,
+Serror_rate          FLOAT,
+Rerror_rate          FLOAT,
+Malicious            TINYINT
+
+
+... if the table doesn't already exist - just for safety.
+
+"""
+
+cursor = conn.cursor()
+try:
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS connection_data (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            Protocol_type VARCHAR(10),
+            Service VARCHAR(10),
+            Flag VARCHAR(10),
+            Src_bytes INT,
+            Dst_bytes INT,
+            Count INT,
+            Serror_rate FLOAT,
+            Rerror_rate FLOAT,
+            Malicious TINYINT
+        )
+    """)
+
+    for _, row in data.iterrows():                                      # using the .iterrows() fn for the dataframe
+        cursor.execute("""
+            INSERT INTO connection_data (
+                Protocol_type, Service, Flag, Src_bytes, Dst_bytes, Count,
+                Serror_rate, Rerror_rate, Malicious
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, tuple(row))                                                # using a tuple keeps the data immutable. In this context while that
+                                                                        # isn't incredibly useful, it may prove a form of protection making it
+    conn.commit()                                                       # harder to manipulate the training data.
+
+    cursor.execute("SELECT * FROM connection_data")
+    records = cursor.fetchall()                                         # we use fetchall() to fetch well, all the rows of the dataframe and return the tuples
+    print("\n\n\nRetrieved Records from Database:")                     # using a couple of \n's will make things more readable on printing.
+    for rec in records:
+        print(rec)
+
+except Error as e:
+    print(f"Database error: {e}")
+finally:
+    if cursor:
+        cursor.close()
+    if conn:
+        conn.close()                                                    # closing the connection is a good practice in python sql.
+                                                                        # just like we delete a pointer upon completing its intended use,
+                                                                        # closing the cursor ensures that memory resources are deallocated and not wasted.
