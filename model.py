@@ -30,3 +30,14 @@ def load_data():
     df = pd.read_sql(query, conn)
     conn.close()
     return df.dropna()  # we can use dropna() function to drop rows with null values to clean the data.
+
+
+def preprocess_data(df):
+    categorical_cols = ['Protocol_type', 'Service', 'Flag']
+    numerical_cols = ['Src_bytes', 'Dst_bytes', 'Count', 'Serror_rate', 'Rerror_rate']
+    target_col = 'Malicious'
+
+    """
+    Though not super necessary, it is more organized to split the data into categorical and numerical columns. it makes
+    no difference to the training as X simply adds them in a dataframe, from df (which is the full dataframe).
+    """
