@@ -40,4 +40,9 @@ def preprocess_data(df):
     """
     Though not super necessary, it is more organized to split the data into categorical and numerical columns. it makes
     no difference to the training as X simply adds them in a dataframe, from df (which is the full dataframe).
+    
+    y is simply the 0 or 1: is it malicious? used for training (single col)
     """
+
+    X = df[categorical_cols + numerical_cols]
+    y = df[target_col].astype(int)
