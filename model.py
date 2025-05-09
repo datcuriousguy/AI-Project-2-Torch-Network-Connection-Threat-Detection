@@ -46,3 +46,23 @@ def preprocess_data(df):
 
     X = df[categorical_cols + numerical_cols]
     y = df[target_col].astype(int)
+
+    """
+    Here, the data is processed into a form that the neural network can be trained on,
+    similar to how Tokenization is done in large langauge models.
+    
+    For example, the protocols ['TCP', 'UDP', 'ICMP'] may become [1, 0, 0], [0, 1, 0] for differentiation.
+    so that these binary representations can be used to train the neural network.
+    
+    Note that 'cat' stands for 'categorical' and 'num' represents the numerical data.
+    we use the StandardScaler function to normalize them:
+
+    It transforms features to have mean = 0 and std = 1, and helps in the (nn's) learning process
+    """
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols),
+            ('num', StandardScaler(), numerical_cols)
+        ]
+    )
