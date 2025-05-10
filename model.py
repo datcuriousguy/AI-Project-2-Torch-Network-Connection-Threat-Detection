@@ -112,7 +112,7 @@ Like last time, we also use torch.nn.Linear() since it is popular for simple neu
 class Net(nn.Module):
     def __init__(self, input_dim):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(10, 32)  # First hidden layer: 32 neurons from the 10 input features.
+        self.fc1 = nn.Linear(input_dim, 32)  # First hidden layer: 32 neurons from the 10 input features.
         self.fc2 = nn.Linear(32, 16)  # Second hidden layer: 16 neurons generalized from 32.
         self.out = nn.Linear(16, 1)  # Output layer: 1 neuron for binary classification.
 
@@ -201,7 +201,7 @@ applies the preprocessing to features (X) and labels (Y) and returns the preproc
 if __name__ == "__main__":
     df = load_data()
     X, y, preprocessor = preprocess_data(df)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # random state is arbitrary
 
     model = train_model(X_train, y_train, input_dim=X.shape[1])  #finally defining the model using our train_model() func
     evaluate_model(model, X_test, y_test)  # calling our predefined evaluation function evaluate_model()
@@ -252,3 +252,19 @@ sample_data = pd.DataFrame([
 
 # Preprocess using the same preprocessor (X, y, preprocessor = preprocess_data(df))
 X_sample = preprocessor.transform(sample_data)
+
+# Convert to torch tensor
+X_tensor = torch.tensor(X_sample, dtype=torch.float32)
+
+# Set model to evaluation mode
+model.eval()
+
+# Predict
+with torch.no_grad():
+    outputs = model(X_tensor)
+    predictions = (outputs > 0.5).int()  # Binary threshold to round to 0 or 1
+
+# Print the model's classifications
+for i, pred in enumerate(predictions):
+    label = "🔴 Suspicious" if pred.item() == 1 else "🟢 Normal"
+    print(f"Connection {i+1}: {label}")
