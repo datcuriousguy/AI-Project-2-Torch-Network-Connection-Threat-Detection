@@ -191,3 +191,17 @@ def evaluate_model(model, X_test, y_test):
         accuracy = accuracy_score(y_test, preds) # compares the binary classification to the real values to measure accuracy of the model.
         print(f"\nTest Accuracy: {accuracy * 100:.2f}%") # show the accuracy to two decimals.
         return preds  # preds is a numpy array.
+
+"""
+The pipeline:
+
+applies the preprocessing to features (X) and labels (Y) and returns the preprocessor for use later
+80:20 train-test split
+"""
+if __name__ == "__main__":
+    df = load_data()
+    X, y, preprocessor = preprocess_data(df)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    model = train_model(X_train, y_train, input_dim=X.shape[1])  #finally defining the model using our train_model() func
+    evaluate_model(model, X_test, y_test)  # calling our predefined evaluation function evaluate_model()
