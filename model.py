@@ -99,3 +99,24 @@ def preprocess_data(df):
 
     X_processed = preprocessor.fit_transform(X)
     return X_processed, y.values, preprocessor
+
+"""
+Now we define the neural network. Like in NN Project 1, lets use a class with inbuilt definitions for the layers and
+feedforward function.
+
+Like last time, we also use torch.nn.Linear() since it is popular for simple neural networks.
+
+
+"""
+
+class Net(nn.Module):
+    def __init__(self, input_dim):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(10, 32)  # First hidden layer: 32 neurons from the 10 input features.
+        self.fc2 = nn.Linear(32, 16)  # Second hidden layer: 16 neurons generalized from 32.
+        self.out = nn.Linear(16, 1)  # Output layer: 1 neuron for binary classification.
+
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))   # again, applying the popular reLU optimizer over each connection. helps with learning
+        x = torch.relu(self.fc2(x))   # non-linear relationships like that of network features.  using sigmoid 'squashes' the output as a probability between 0 and 1,
+        return torch.sigmoid(self.out(x))    # great for rounding for binary classification
