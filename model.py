@@ -117,6 +117,62 @@ class Net(nn.Module):
         self.out = nn.Linear(16, 1)  # Output layer: 1 neuron for binary classification.
 
     def forward(self, x):
-        x = torch.relu(self.fc1(x))   # again, applying the popular reLU optimizer over each connection. helps with learning
+        x = torch.relu(self.fc1(x))   # again, applying the popular reLU  optimizer over each connection. helps with learning
         x = torch.relu(self.fc2(x))   # non-linear relationships like that of network features.  using sigmoid 'squashes' the output as a probability between 0 and 1,
         return torch.sigmoid(self.out(x))    # great for rounding for binary classification
+
+
+
+"""
+TRAINING THE MODEL
+
+we use Binary Cross Entropy (BCE) for binary classification.
+
+The optimizer employs the widely-used Adam algorithm to adjust the model's parameters, like its gradients
+before backpropagation. The parameters() function is used by the torch.optim.Adam() function to identify 
+which parameters need to be modified. 
+
+Additionally, lr refers to the learning rate, which begins at 0.001 per pass.
+
+we need to convert the training data (which is currently a dataframe/array) into a tensor datatype in
+order to run it through the model, as tensors use float32 values so we use the torch.tensor() cfunction
+to do this.
+
+next, we use torch.tensor() with the reshaped y_train. Specifically, we have
+reshaped it. for example:
+
+BEFORE RESHAPING WITH .reshape(-1,1)
+
+y_train = [0, 1, 0, 1, 0]
+
+AFTER RESHAPING WITH .reshape(-1,1)
+
+y_train_reshaped = [[0], 
+                    [1], 
+                    [0], 
+                    [1], 
+                    [0]]
+                    
+As before, we need to do thi because pytorch expects values to be in the form of
+a 2D array, even if its just one column. reshaping it to (-1,1).
+as before, -1 asks pytorch to figure out the number of rows needed based in the
+original size of y_train, and 1 simply says "make it 1 column".
+"""
+
+def train_model(X_train, y_train, input_dim):
+    model = Net(input_dim)
+    criterion = nn.BCELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
+    y_train_tensor = torch.tensor(y_train.reshape(-1, 1), dtype=torch.float32)
+
+    for epoch in range(100):  # number of epochs or training cycles. More = better but takes longer.
+        optimizer.zero_grad()  #for each epoch, we need to clear the gradients for next one.
+        outputs = model(X_train_tensor)  # feeds the features through the model and takes the output tensor as 'outputs'
+        loss = criterion(outputs, y_train_tensor)  # computes how wrong the model was in this iteration.
+        loss.backward() # initiates the backpropagation. Computing how much weight each parameter has contributed to the loss so they can be adjusted.
+        optimizer.step()  # adjusts parameters such that error will be reduced for the next iteration
+        if (epoch + 1) % 10 == 0:
+            print(f"Epoch [{epoch+1}/100], Loss: {loss.item():.4f}")  # see the loss every 10 epochs
+    return model
