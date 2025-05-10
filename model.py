@@ -205,3 +205,50 @@ if __name__ == "__main__":
 
     model = train_model(X_train, y_train, input_dim=X.shape[1])  #finally defining the model using our train_model() func
     evaluate_model(model, X_test, y_test)  # calling our predefined evaluation function evaluate_model()
+
+
+""" TESTING THE MODEL """
+
+"""
+We create sample connection data to classify as suspicious or not.
+"""
+
+import numpy as np
+import torch
+
+# some sample connection information to determine as potentially suspicious - testing.
+sample_data = pd.DataFrame([
+    {
+        "Protocol_type": "tcp",
+        "Service": "http",
+        "Flag": "SF",
+        "Src_bytes": 1000,
+        "Dst_bytes": 500,
+        "Count": 10,
+        "Serror_rate": 0.0,
+        "Rerror_rate": 0.0
+    },
+    {
+        "Protocol_type": "udp",
+        "Service": "domain_u",
+        "Flag": "S0",
+        "Src_bytes": 200,
+        "Dst_bytes": 50,
+        "Count": 20,
+        "Serror_rate": 0.5,
+        "Rerror_rate": 0.2
+    },
+    {
+        "Protocol_type": "icmp",
+        "Service": "eco_i",
+        "Flag": "REJ",
+        "Src_bytes": 0,
+        "Dst_bytes": 0,
+        "Count": 5,
+        "Serror_rate": 1.0,
+        "Rerror_rate": 1.0
+    }
+])
+
+# Preprocess using the same preprocessor (X, y, preprocessor = preprocess_data(df))
+X_sample = preprocessor.transform(sample_data)
