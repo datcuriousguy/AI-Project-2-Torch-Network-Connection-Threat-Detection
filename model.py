@@ -176,3 +176,18 @@ def train_model(X_train, y_train, input_dim):
         if (epoch + 1) % 10 == 0:
             print(f"Epoch [{epoch+1}/100], Loss: {loss.item():.4f}")  # see the loss every 10 epochs
     return model
+
+"""
+evaluate_model() accepts the model, with the training data and the true (real) is_Malicious labels.
+after being put into evaluation mode, we use torch.no_grad() to save memory and speeds up computations.
+obviously, we return the predictions that the model has given.
+"""
+def evaluate_model(model, X_test, y_test):
+    model.eval()
+    with torch.no_grad():
+        X_test_tensor = torch.tensor(X_test, dtype=torch.float32)  # as mentioned before the torch model requires a pytorch tensor datatype, which we are converting x_test data to.
+        outputs = model(X_test_tensor)  # running the model on the x training tensor.
+        preds = (outputs >= 0.5).int().flatten().numpy() # for binary classification, rounds the outputs to 1 or 0 based on whether its greater than or = 0.5. 0 = not suspicious and 1 = is suspicious connection attempt.
+        accuracy = accuracy_score(y_test, preds) # compares the binary classification to the real values to measure accuracy of the model.
+        print(f"\nTest Accuracy: {accuracy * 100:.2f}%") # show the accuracy to two decimals.
+        return preds  # preds is a numpy array.
