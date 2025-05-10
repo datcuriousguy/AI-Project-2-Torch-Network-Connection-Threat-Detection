@@ -66,3 +66,36 @@ def preprocess_data(df):
             ('num', StandardScaler(), numerical_cols)
         ]
     )
+
+    """
+    .fit_transform(X) learns the mean, std dev, etc for each feature, and is used to learn how to transform the data. 
+    It returns a horizontally stacked set of results of transformers, converting the data into a numeric format that the
+    neural network can 'understand' better. Here is a simple, sample example of how we get X_processed from
+    the training data:
+    
+    BEFORE:
+    
+    | Protocol_type | Service | Src_bytes | Dst_bytes |
+    | -------------- | ------- | ---------- | ---------- |
+    | tcp            | http    | 100        | 300        |
+    | udp            | ftp     | 2000       | 100        |
+    | icmp           | http    | 50         | 500        |
+
+    AFTER
+    
+    | tcp | udp | icmp | http | ftp | Src_bytes_scaled | Dst_bytes_scaled |
+    | --- | --- | ---- | ---- | --- | ------------------ | ------------------ |
+    | 1.0 | 0.0 | 0.0  | 1.0  | 0.0 | -0.61              | 0.53               |
+    | 0.0 | 1.0 | 0.0  | 0.0  | 1.0 | 1.34               | -1.22              |    # each is a row.
+    | 0.0 | 0.0 | 1.0  | 1.0  | 0.0 | -0.73              | 0.69               |
+
+    as for y_values, those represent the training data's result column, i.e., 'is_Malicious'.
+    we get an array; array([0, 1, 0])
+
+    Note that preprocessor can be used to adjust any new training data to have the same mean and mode, adapting
+    it to the model's parameters.
+
+    """
+
+    X_processed = preprocessor.fit_transform(X)
+    return X_processed, y.values, preprocessor
