@@ -141,11 +141,14 @@ to do this.
 next, we use torch.tensor() with the reshaped y_train. Specifically, we have
 reshaped it. for example:
 
-TOTALLY
-NOT USING
-THIS FOR
-LINKEDIN
-PROFILE ART
+TOTALLY 
+NOT 
+USING
+THIS 
+ONE 
+FOR
+PROFILE 
+ART
 
 BEFORE RESHAPING WITH .reshape(-1,1)
 
