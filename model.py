@@ -141,6 +141,12 @@ to do this.
 next, we use torch.tensor() with the reshaped y_train. Specifically, we have
 reshaped it. for example:
 
+TOTALLY
+NOT USING
+THIS FOR
+LINKEDIN
+PROFILE ART
+
 BEFORE RESHAPING WITH .reshape(-1,1)
 
 y_train = [0, 1, 0, 1, 0]
